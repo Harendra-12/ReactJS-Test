@@ -1,4 +1,4 @@
-# Stage 1: Build React appp
+# Stage 1: Build React apppp
 FROM node:18-alpine AS build
 
 # Set working directory
