@@ -16,7 +16,7 @@ pipeline {
                         configName: "${SSH_SERVER}",
                         transfers: [
                             sshTransfer(
-                                sourceFiles: "Dockerfile",   // only send Dockerfile
+                                sourceFiles: "Dockerfile",
                                 remoteDirectory: "${REMOTE_DIR}",
                                 flatten: true
                             )
@@ -29,19 +29,12 @@ pipeline {
 
         stage('Build & Run Container') {
             steps {
-                sshPublisher(publishers: [
-                    sshPublisherDesc(
-                        configName: "${SSH_SERVER}",
-                        transfers: [],
-                        verbose: true,
-                        execCommand: """
-                            cd ${REMOTE_DIR} && \
-                            docker build -t ${IMAGE_NAME}:${IMAGE_TAG} . && \
-                            docker rm -f ${IMAGE_NAME} || true && \
-                            docker run -d --name ${IMAGE_NAME} -p 80:80 ${IMAGE_NAME}:${IMAGE_TAG}
-                        """
-                    )
-                ])
+                sshScript remote: "${SSH_SERVER}", script: """
+                    cd ${REMOTE_DIR} && \
+                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} . && \
+                    docker rm -f ${IMAGE_NAME} || true && \
+                    docker run -d --name ${IMAGE_NAME} -p 80:80 ${IMAGE_NAME}:${IMAGE_TAG}
+                """
             }
         }
     }
