@@ -32,7 +32,6 @@ pipeline {
                 sshCommand remote: "${SSH_SERVER}", command: """
                     cd ${REMOTE_DIR} &&
                     docker build -t ${IMAGE_NAME}:${IMAGE_TAG} . &&
-                    docker rm -f ${IMAGE_NAME} || true &&
                     docker run -d --name ${IMAGE_NAME} -p 80:80 ${IMAGE_NAME}:${IMAGE_TAG}
                 """
             }
