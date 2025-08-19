@@ -8,7 +8,7 @@ pipeline {
         REMOTE_DIR = "/Webserver/React"
         IMAGE_NAME = "react_app"
         IMAGE_TAG  = "latest"
-        IMAGE_FILE = "react_app.tar"
+        IMAGE_FILE = "react_app"
     }
 
     stages {
