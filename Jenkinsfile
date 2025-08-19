@@ -8,7 +8,6 @@ pipeline {
         REMOTE_DIR = "/Webserver/React"
         IMAGE_NAME = "react_app"
         IMAGE_TAG  = "latest"
-        IMAGE_FILE = "react_app"
     }
 
     stages {
@@ -18,33 +17,16 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
-                sh "docker save -o ${IMAGE_FILE} ${IMAGE_NAME}:${IMAGE_TAG}"
-            }
-        }
-        
-        stage('Clean Docker Storage') {
-            steps {
-                echo "🧹 Cleaning up unused Docker images, containers, volumes, and build cache..."
-                sh '''
-                    docker system prune -af --volumes
-                    docker builder prune -af
-                '''
-            }
-        }
-
-        stage('Transfer Docker Image to Webserver') {
+        stage('Transfer Source Code to Webserver') {
             steps {
                 sshPublisher(publishers: [
                     sshPublisherDesc(
                         configName: "${SSH_SERVER}",
                         transfers: [
                             sshTransfer(
-                                sourceFiles: "${IMAGE_FILE}",
+                                sourceFiles: "**",   // transfer all files from repo
                                 remoteDirectory: "${REMOTE_DIR}",
-                                flatten: true
+                                flatten: false
                             )
                         ],
                         verbose: true
@@ -53,7 +35,7 @@ pipeline {
             }
         }
 
-        stage('Deploy on Webserver') {
+        stage('Build & Run Container on Webserver') {
             steps {
                 sshPublisher(publishers: [
                     sshPublisherDesc(
@@ -62,7 +44,7 @@ pipeline {
                         verbose: true,
                         execCommand: """
                             cd ${REMOTE_DIR} && \
-                            docker load -i ${IMAGE_FILE} && \
+                            docker build -t ${IMAGE_NAME}:${IMAGE_TAG} . && \
                             docker rm -f react_app || true && \
                             docker run -d --name react_app -p 80:80 ${IMAGE_NAME}:${IMAGE_TAG}
                         """
@@ -74,10 +56,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Docker container deployed successfully on ${SSH_SERVER} (port 80)"
+            echo "✅ App deployed successfully on ${SSH_SERVER}, available at http://<server-ip>:80"
         }
         failure {
-            echo "❌ Pipeline failed. Check logs."
+            echo "❌ Deployment failed. Check logs."
         }
     }
 }
