@@ -10,7 +10,7 @@ pipeline {
     agent any
 
     environment {
-        REMOTE_DIR = "/root/Webserver/React"
+        REMOTE_DIR = "/Webserver/React"
         IMAGE_NAME = "react_app"
         IMAGE_TAG  = "latest"
     }
