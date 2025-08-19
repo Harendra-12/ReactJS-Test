@@ -9,7 +9,7 @@ pipeline {
     }
 
     stages {
-        stage('Transfer Dockerfile to Webserver') {
+        stage('Transfer Dockerfile') {
             steps {
                 sshPublisher(publishers: [
                     sshPublisherDesc(
@@ -27,7 +27,7 @@ pipeline {
             }
         }
 
-        stage('Build & Run Container on Webserver') {
+        stage('Build & Run Container') {
             steps {
                 sshPublisher(publishers: [
                     sshPublisherDesc(
@@ -48,7 +48,7 @@ pipeline {
 
     post {
         success {
-            echo "✅ Container is running on port 80 at ${SSH_SERVER}"
+            echo "✅ Frontend container is running on port 80 at ${SSH_SERVER}"
         }
         failure {
             echo "❌ Deployment failed. Check logs."
