@@ -1,8 +1,15 @@
+def remoteServer = [
+    name: "Webserver",
+    host: "18.223.151.223",
+    user: "root",
+    identityFile: "/root/.ssh/id_rsa",  // path to private key on Jenkins
+    allowAnyHosts: true
+]
+
 pipeline {
     agent any
 
     environment {
-        SSH_SERVER = "Webserver"
         REMOTE_DIR = "/root/Webserver/React"
         IMAGE_NAME = "react_app"
         IMAGE_TAG  = "latest"
@@ -13,12 +20,11 @@ pipeline {
             steps {
                 sshPublisher(publishers: [
                     sshPublisherDesc(
-                        configName: "${SSH_SERVER}",
+                        configName: "Webserver",  // must match SSH site in Jenkins config
                         transfers: [
                             sshTransfer(
-                                sourceFiles: "**/*",   // send everything in repo
+                                sourceFiles: "**/*",
                                 remoteDirectory: "${REMOTE_DIR}",
-                                removePrefix: "",      // preserve structure
                                 flatten: false
                             )
                         ],
@@ -30,7 +36,7 @@ pipeline {
 
         stage('Build & Run Container') {
             steps {
-                sshCommand remote: "${SSH_SERVER}", command: """
+                sshCommand remote: remoteServer, command: """
                     cd ${REMOTE_DIR} &&
                     docker build -t ${IMAGE_NAME}:${IMAGE_TAG} . &&
                     docker rm -f ${IMAGE_NAME} || true &&
@@ -42,7 +48,7 @@ pipeline {
 
     post {
         success {
-            echo "✅ Frontend container is running on port 80 at ${SSH_SERVER}"
+            echo "✅ Frontend container is running on port 80"
         }
         failure {
             echo "❌ Something went wrong — check logs."
