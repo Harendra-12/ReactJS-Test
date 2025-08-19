@@ -9,16 +9,17 @@ pipeline {
     }
 
     stages {
-        stage('Transfer Dockerfile') {
+        stage('Transfer Source Code + Dockerfile') {
             steps {
                 sshPublisher(publishers: [
                     sshPublisherDesc(
                         configName: "${SSH_SERVER}",
                         transfers: [
                             sshTransfer(
-                                sourceFiles: "Dockerfile",
+                                sourceFiles: "**/*",   // send everything in repo
                                 remoteDirectory: "${REMOTE_DIR}",
-                                flatten: true
+                                removePrefix: "",      // preserve structure
+                                flatten: false
                             )
                         ],
                         verbose: true
@@ -32,6 +33,7 @@ pipeline {
                 sshCommand remote: "${SSH_SERVER}", command: """
                     cd ${REMOTE_DIR} &&
                     docker build -t ${IMAGE_NAME}:${IMAGE_TAG} . &&
+                    docker rm -f ${IMAGE_NAME} || true &&
                     docker run -d --name ${IMAGE_NAME} -p 80:80 ${IMAGE_NAME}:${IMAGE_TAG}
                 """
             }
