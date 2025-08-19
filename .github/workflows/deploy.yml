@@ -1,0 +1,43 @@
+name: CI/CD Deploy to Webserver with Docker
+
+on:
+  push:
+    branches:
+      - main   # Trigger only when code is pushed to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repo
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Copy project files to the server
+      - name: Copy files to Web Server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "./*"
+          target: "/root/Webapp"   # Copy to some directory on server
+
+      # Step 3: SSH into server and build/run Docker container
+      - name: Deploy with Docker
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /root/Webapp
+            # Stop and remove old container if exists
+            docker rm -f my_app || true
+            
+            # Build new image
+            docker build -t my_app:latest .
+
+            # Run new container
+            docker run -d --name my_app -p 80:80 my_app:latest
