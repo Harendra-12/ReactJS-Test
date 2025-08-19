@@ -27,21 +27,14 @@ pipeline {
             }
         }
 
-        stage('Build & Run Container on Remote') {
+        stage('Build & Run Container') {
             steps {
-                sshPublisher(publishers: [
-                    sshPublisherDesc(
-                        configName: "${SSH_SERVER}",
-                        transfers: [],
-                        execCommand: """
-                            cd ${REMOTE_DIR} &&
-                            docker build -t ${IMAGE_NAME}:${IMAGE_TAG} . &&
-                            docker rm -f ${IMAGE_NAME} || true &&
-                            docker run -d --name ${IMAGE_NAME} -p 80:80 ${IMAGE_NAME}:${IMAGE_TAG}
-                        """,
-                        verbose: true
-                    )
-                ])
+                sshCommand remote: "${SSH_SERVER}", command: """
+                    cd ${REMOTE_DIR} &&
+                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} . &&
+                    docker rm -f ${IMAGE_NAME} || true &&
+                    docker run -d --name ${IMAGE_NAME} -p 80:80 ${IMAGE_NAME}:${IMAGE_TAG}
+                """
             }
         }
     }
@@ -51,7 +44,7 @@ pipeline {
             echo "✅ Frontend container is running on port 80 at ${SSH_SERVER}"
         }
         failure {
-            echo "❌ Pipeline failed. Check logs."
+            echo "❌ Something went wrong — check logs."
         }
     }
 }
