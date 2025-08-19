@@ -52,11 +52,29 @@ pipeline {
                 ])
             }
         }
+
+        stage('Deploy on Webserver') {
+            steps {
+                sshPublisher(publishers: [
+                    sshPublisherDesc(
+                        configName: "${SSH_SERVER}",
+                        transfers: [],
+                        verbose: true,
+                        execCommand: """
+                            cd ${REMOTE_DIR} && \
+                            docker load -i ${IMAGE_FILE} && \
+                            docker rm -f react_app || true && \
+                            docker run -d --name react_app -p 80:80 ${IMAGE_NAME}:${IMAGE_TAG}
+                        """
+                    )
+                ])
+            }
+        }
     }
 
     post {
         success {
-            echo "✅ Docker image transferred successfully to ${SSH_SERVER}:${REMOTE_DIR}"
+            echo "✅ Docker container deployed successfully on ${SSH_SERVER} (port 80)"
         }
         failure {
             echo "❌ Pipeline failed. Check logs."
