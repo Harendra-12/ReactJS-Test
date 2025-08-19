@@ -1,6 +1,6 @@
 FROM nginx:alpine
 
-# Remove default nginx config
+# Remove default nginx configg
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Add a very basic nginx config
