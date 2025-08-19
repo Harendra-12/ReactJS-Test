@@ -39,16 +39,12 @@ pipeline {
         sshCommand remote: "${SSH_SERVER}", command: """
             set -xe
             cd ${REMOTE_DIR}
-            echo "🛠 Building Docker image..."
             docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
 
-            echo "🧹 Removing old container if exists..."
             docker rm -f ${IMAGE_NAME} || true
 
-            echo "🚀 Running new container..."
             docker run -d --name ${IMAGE_NAME} -p 80:80 ${IMAGE_NAME}:${IMAGE_TAG}
 
-            echo "📋 Checking running containers..."
             docker ps -a
         """
     }
@@ -58,10 +54,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Frontend container is running on port 80"
+            echo "Frontend container is running on port 80"
         }
         failure {
-            echo "❌ Something went wrong — check logs."
+            echo "Something went wrong — check logs."
         }
     }
 }
