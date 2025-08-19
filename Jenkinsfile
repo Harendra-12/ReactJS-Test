@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         SSH_SERVER = "Webserver"
-        REMOTE_DIR = "/Webserver/React"
+        REMOTE_DIR = "/root/Webserver/React"
         IMAGE_NAME = "react_app"
         IMAGE_TAG  = "latest"
     }
