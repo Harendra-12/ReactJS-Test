@@ -1,21 +1,15 @@
+# Use Nginx as a base image
 FROM nginx:alpine
 
-# Remove default nginx configg
-RUN rm /etc/nginx/conf.d/default.conf
+# Remove default nginx static assets
+RUN rm -rf /usr/share/nginx/html/*
 
-# Add a very basic nginx config
-RUN echo 'server { \
-    listen 80; \
-    server_name localhost; \
-    root /usr/share/nginx/html; \
-    index index.html; \
-    location / { \
-        try_files $uri /index.html; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# Add a very basic index.html
+RUN echo '<!DOCTYPE html><html><head><title>Hello</title></head><body><h1>🚀 Frontend is running!</h1></body></html>' \
+    > /usr/share/nginx/html/index.html
 
-# Create a basic placeholder index.html
-RUN echo '<!DOCTYPE html><html><head><title>Frontend</title></head><body><h1>Frontend Container is Running ✅</h1></body></html>' > /usr/share/nginx/html/index.html
-
+# Expose port 80
 EXPOSE 80
+
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
