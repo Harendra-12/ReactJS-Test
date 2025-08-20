@@ -47,7 +47,7 @@ pipeline {
             }
         }
     }
-                stage('Deploy to Webserver') {
+        stage('Deploy to Webserver') {
             steps {
                 script {
                     sh """
