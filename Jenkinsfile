@@ -51,12 +51,15 @@ pipeline {
             steps {
                 script {
                     sh """
+                    # Stream image directly to webserver’s Docker
+                    docker save ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:${IMAGE_TAG} | \
+                    bzip2 | ssh -o StrictHostKeyChecking=no root@18.223.151.223 'bunzip2 | docker load'
+
+                    # Restart container on webserver
                     ssh -o StrictHostKeyChecking=no root@18.223.151.223 '
-                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com &&
-                        docker pull ${ECR_URL}:latest &&
                         docker stop myapp || true &&
                         docker rm myapp || true &&
-                        docker run -d --name myapp -p 80:80 ${ECR_URL}:latest
+                        docker run -d --name myapp -p 80:80 ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:${IMAGE_TAG}
                     '
                     """
                     }
