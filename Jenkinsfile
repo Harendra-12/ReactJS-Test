@@ -63,6 +63,15 @@ pipeline {
                     }
                 }
             }
+        stage('Cleanup Docker') {
+            steps {
+                sh '''
+                  echo "Cleaning up old docker data..."
+                  docker system prune -af --volumes
+                '''
+            }
+        }
+
         }       
     
     post {
