@@ -46,7 +46,7 @@ pipeline {
                 """
             }
         }
-    }
+
         stage('Deploy to Webserver') {
             steps {
                 script {
@@ -59,6 +59,7 @@ pipeline {
                         docker run -d --name myapp -p 80:80 ${ECR_URL}:latest
                     '
                     """
+                    }
                 }
             }
         }       
