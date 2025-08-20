@@ -38,9 +38,8 @@ pipeline {
             steps {
                 sh """
                 docker tag ${REPO_NAME}:${IMAGE_TAG} ${ECR_URL}:${IMAGE_TAG}
-                docker push ${ECR_URL}:${IMAGE_TAG}
-
                 docker tag ${REPO_NAME}:${IMAGE_TAG} ${ECR_URL}:${VERSION_TAG}
+                docker push ${ECR_URL}:${IMAGE_TAG}
                 docker push ${ECR_URL}:${VERSION_TAG}
 
                 """
