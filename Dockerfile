@@ -1,4 +1,4 @@
-# ---- Stage 1: Build React App -----
+# ---- Stage 1: Build React App ------
 FROM node:18 AS build
 
 WORKDIR /app
