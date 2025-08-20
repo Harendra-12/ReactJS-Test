@@ -8,6 +8,8 @@ pipeline {
         VERSION_TAG    = "${BUILD_NUMBER}"
         IMAGE_TAG      = "latest"   // You can change this to BUILD_NUMBER or git commit SHA
         ECR_URL        = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}"
+        ARG BUILD_NUMBER=0
+        LABEL build_number=$BUILD_NUMBER
     }
 
     stages {
@@ -37,11 +39,10 @@ pipeline {
         stage('Tag & Push Image to ECR') {
             steps {
                 sh """
-                docker tag ${REPO_NAME}:${IMAGE_TAG} ${ECR_URL}:${IMAGE_TAG}
                 docker tag ${REPO_NAME}:${IMAGE_TAG} ${ECR_URL}:${VERSION_TAG}
-                docker push ${ECR_URL}:${IMAGE_TAG}
                 docker push ${ECR_URL}:${VERSION_TAG}
-
+                docker tag ${REPO_NAME}:${IMAGE_TAG} ${ECR_URL}:${IMAGE_TAG}
+                docker push ${ECR_URL}:${IMAGE_TAG}
                 """
             }
         }
