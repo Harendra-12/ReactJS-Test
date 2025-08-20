@@ -19,7 +19,8 @@ pipeline {
 
         stage('Build Image with Docker') {
             steps {
-                sh "docker build --build-arg BUILD_NUMBER=${BUILD_NUMBER} -t ${REPO_NAME}:${IMAGE_TAG} ."
+                sh "docker build -t ${REPO_NAME}:${VERSION_TAG} ."
+                                    
             }
         }
 
@@ -37,10 +38,12 @@ pipeline {
         stage('Tag & Push Image to ECR') {
             steps {
                 sh """
-                docker tag ${REPO_NAME}:${IMAGE_TAG} ${ECR_URL}:${VERSION_TAG}
+                docker tag ${REPO_NAME}:${VERSION_TAG} ${ECR_URL}:${VERSION_TAG}
+                docker tag ${REPO_NAME}:${VERSION_TAG} ${ECR_URL}:${IMAGE_TAG}
+                
                 docker push ${ECR_URL}:${VERSION_TAG}
-                docker tag ${REPO_NAME}:${IMAGE_TAG} ${ECR_URL}:${IMAGE_TAG}
                 docker push ${ECR_URL}:${IMAGE_TAG}
+                
                 """
             }
         }
@@ -76,10 +79,10 @@ pipeline {
     
     post {
         success {
-            echo "✅ Successfully pushed: ${ECR_URL}:${IMAGE_TAG}"
+            echo "Successfully pushed: ${ECR_URL}:${IMAGE_TAG}"
         }
         failure {
-            echo "❌ Pipeline failed. Check logs."
+            echo "Pipeline failed. Check logs."
         }
     }
 }
