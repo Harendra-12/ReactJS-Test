@@ -1,22 +1,29 @@
-# Use Nginx as a base image
+# ---- Stage 1: Build React App ----
+FROM node:18 AS build
 
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json first (for caching)
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy all project files
+COPY . .
+
+# Build production-ready static files
+RUN npm run build
+
+# ---- Stage 2: Serve with Nginx ----
 FROM nginx:alpine
 
-ARG BUILD_NUMBER=0
-
-LABEL build_number=$BUILD_NUMBER
-
-# Remove default nginx static assets
-
-RUN rm -rf /usr/share/nginx/html/*
-
-# Add a very basic index.html
-
-RUN echo '<!DOCTYPE html><html><head><title>Hello</title></head><body><h1> Frontend is running now!!!!!!!!!!!!!</h1></body></html>' \
-    > /usr/share/nginx/html/index.html
+# Copy built files from stage 1
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80
 
-# Start Nginx
+# Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
