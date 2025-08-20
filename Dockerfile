@@ -1,4 +1,4 @@
-# Use Nginx as a base image
+# Use Nginx as a base imagee
 FROM nginx:alpine
 
 # Remove default nginx static assets
