@@ -33,8 +33,6 @@ pipeline {
                 }
             }
         }
-
-        
         
         stage('Tag & Push Image to ECR') {
             steps {
@@ -44,15 +42,6 @@ pipeline {
                 docker tag ${REPO_NAME}:${IMAGE_TAG} ${ECR_URL}:${IMAGE_TAG}
                 docker push ${ECR_URL}:${IMAGE_TAG}
                 """
-            }
-        }
-
-        stage('Cleanup Docker') {
-            steps {
-                sh '''
-                  echo "Cleaning up old docker data..."
-                  docker system prune -af --volumes
-                '''
             }
         }
 
