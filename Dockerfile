@@ -1,6 +1,7 @@
 # Use Nginx as a base imagee
 FROM nginx:alpine
-
+ARG BUILD_NUMBER=0
+LABEL build_number=$BUILD_NUMBER
 # Remove default nginx static assets
 RUN rm -rf /usr/share/nginx/html/*
 
