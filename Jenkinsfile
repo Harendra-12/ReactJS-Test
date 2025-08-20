@@ -34,6 +34,8 @@ pipeline {
             }
         }
 
+        
+        
         stage('Tag & Push Image to ECR') {
             steps {
                 sh """
@@ -45,7 +47,22 @@ pipeline {
             }
         }
     }
-
+                stage('Deploy to Webserver') {
+            steps {
+                script {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no root@18.223.151.223 '
+                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com &&
+                        docker pull ${ECR_URL}:latest &&
+                        docker stop myapp || true &&
+                        docker rm myapp || true &&
+                        docker run -d --name myapp -p 80:80 ${ECR_URL}:latest
+                    '
+                    """
+                }
+            }
+        }       
+    
     post {
         success {
             echo "✅ Successfully pushed: ${ECR_URL}:${IMAGE_TAG}"
