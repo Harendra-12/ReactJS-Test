@@ -1,21 +1,21 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import Dashboard from "@/components/pages/Dashboard";
-import AgentsLayout from "@/components/pages/agents/AgentsLayout";
-import AgentsList from "@/components/pages/agents/AgentsList";
-import ConversationsFlow from "@/components/pages/agents/ConversationsFlow";
-import KnowledgeBase from "./components/pages/KnowledgeBase";
-import PhoneNumber from "./components/pages/PhoneNumber";
-import CallHistory from "./components/pages/CallHistory";
-import Billing from "./components/pages/Billing";
-import Members from "./components/pages/Members";
-import ProviderKeys from "./components/pages/ProviderKeys";
-import Squads from "./components/pages/Squads";
-import PhoneNumberRetell from "./components/pages/PhoneNumberRetell";
-import BatchCall from "./components/pages/BatchCalls";
-import Signup from "./components/pages/Signup";
-import Signin from "./components/pages/Signin";
-import { useSelector } from "react-redux";
-import Reactflow from "./components/custom/ReactFlow/Reactflow";
+#import { Routes, Route, Navigate } from "react-router-dom";
+#import Dashboard from "@/components/pages/Dashboard";
+#import AgentsLayout from "@/components/pages/agents/AgentsLayout";
+#import AgentsList from "@/components/pages/agents/AgentsList";
+#import ConversationsFlow from "@/components/pages/agents/ConversationsFlow";
+#import KnowledgeBase from "./components/pages/KnowledgeBase";
+#import PhoneNumber from "./components/pages/PhoneNumber";
+#import CallHistory from "./components/pages/CallHistory";
+#import Billing from "./components/pages/Billing";
+#import Members from "./components/pages/Members";
+#import ProviderKeys from "./components/pages/ProviderKeys";
+#import Squads from "./components/pages/Squads";
+#import PhoneNumberRetell from "./components/pages/PhoneNumberRetell";
+#import BatchCall from "./components/pages/BatchCalls";
+#import Signup from "./components/pages/Signup";
+#import Signin from "./components/pages/Signin";
+#import { useSelector } from "react-redux";
+#import Reactflow from "./components/custom/ReactFlow/Reactflow";
 // import CustomLLM from "@/components/pages/agents/CustomLLM";
 
 export function AppRoutes() {
@@ -26,7 +26,6 @@ export function AppRoutes() {
       <Route path="/" element={<Navigate to="/list" replace />} />
       <Route path="/sign-up" element={<Signup />} />
       <Route path="/sign-in" element={<Signin />} />
-
       {token &&
         token !== "undefined" &&
         token !== undefined &&
@@ -37,7 +36,6 @@ export function AppRoutes() {
             <Route path="list" element={<AgentsList />} />
             <Route path="conversations-flow" element={<ConversationsFlow />} />
             <Route path="react-flow" element={<Reactflow />} />
-            <Route path="knowledge-base" element={<KnowledgeBase />} />
             <Route path="squads" element={<Squads />} />
             <Route path="phone-numbers" element={<PhoneNumber />} />
             <Route path="number" element={<PhoneNumberRetell />} />
