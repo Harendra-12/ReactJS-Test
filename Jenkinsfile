@@ -19,7 +19,7 @@ pipeline {
 
         stage('Build Image with Docker') {
             steps {
-                sh "docker build -t ${REPO_NAME}:${IMAGE_TAG} ."
+                sh "docker build --build-arg BUILD_NUMBER=${BUILD_NUMBER} -t ${REPO_NAME}:${IMAGE_TAG} ."
             }
         }
 
