@@ -1,11 +1,22 @@
 node {
-  stage('SCM') {
-    checkout scm
-  }
-  stage('SonarQube Analysis') {
-    def scannerHome = tool 'SonarScanner';
-    withSonarQubeEnv() {
-      sh "${scannerHome}/bin/sonar-scanner"
+    stage('SCM') {
+        checkout scm
     }
-  }
+    
+    stage('Install Dependencies') {
+        sh 'npm install'
+        // or: sh 'yarn install'
+    }
+    
+    stage('Run Tests & Generate Coverage') {
+        sh 'npm run test:coverage'
+        // or: sh 'yarn test:coverage'
+    }
+    
+    stage('SonarQube Analysis') {
+        def scannerHome = tool 'SonarScanner'
+        withSonarQubeEnv('SonarQube') {
+            sh "${scannerHome}/bin/sonar-scanner"
+        }
+    }
 }
