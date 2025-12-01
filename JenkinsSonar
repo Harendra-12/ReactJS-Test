@@ -4,13 +4,11 @@ node {
     }
     
     stage('Install Dependencies') {
-        sh 'npm install'
-        // or: sh 'yarn install'
+        sh 'npm install --legacy-peer-deps'
     }
     
     stage('Run Tests & Generate Coverage') {
         sh 'npm run test:coverage'
-        // or: sh 'yarn test:coverage'
     }
     
     stage('SonarQube Analysis') {
